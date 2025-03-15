@@ -1,35 +1,15 @@
+'use client';
+
 import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
 
 const Page = () => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        backgroundColor: '#121212',
-        color: '#ffffff',
-      }}
-    >
+    <div className="flex flex-col justify-center items-center h-screen text-white">
       <Typography variant="h2" gutterBottom>
         WageWizard
       </Typography>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          border: '1px solid #444',
-          borderRadius: '8px',
-          padding: '20px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-          backgroundColor: '#1e1e1e',
-          marginTop: '20px',
-          width: '300px',
-        }}
-      >
+      <Box className="flex flex-col border border-gray-600 rounded-lg p-5 shadow-lg bg-[#1e1e1e] mt-5 w-72">
         <Button
           variant="contained"
           style={{
@@ -37,12 +17,18 @@ const Page = () => {
             color: '#333333',
             marginBottom: '10px',
           }}
+          onClick={() => {
+            window.location.href = '/auth/login';
+          }}
         >
           Login
         </Button>
         <Button
           variant="outlined"
           style={{ borderColor: '#cccccc', color: '#cccccc' }}
+          onClick={() => {
+            window.location.href = '/auth/signup';
+          }}
         >
           Signup
         </Button>
