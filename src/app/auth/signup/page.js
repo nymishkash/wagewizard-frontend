@@ -1,8 +1,29 @@
 'use client';
 
 import { Box, Button, Typography } from '@mui/material';
+import { useState } from 'react';
+import axios from 'axios';
 
-const LoginPage = () => {
+const SignupPage = () => {
+  const [name, setName] = useState('');
+  const [company, setCompany] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSignup = async () => {
+    try {
+      const response = await axios.post('http://localhost:8081/signup', {
+        name,
+        email,
+        password,
+        company,
+      });
+      console.log('Signup successful:', response.data);
+    } catch (error) {
+      console.error('Signup failed:', error);
+    }
+  };
+
   return (
     <div className="flex flex-col justify-center items-center h-screen ">
       <div className="text-[ffffff]">
@@ -15,25 +36,34 @@ const LoginPage = () => {
           type="text"
           placeholder="Name"
           className="mb-4 p-2 rounded placeholder:text-gray-500 border border-[#333333] bg-[#cccccc] outline-[#333333] font-sans"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
         <input
           type="text"
           placeholder="Company name"
           className="mb-4 p-2 rounded placeholder:text-gray-500 border border-[#333333] bg-[#cccccc] outline-[#333333] font-sans"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
         />
         <input
           type="email"
           placeholder="Email"
           className="mb-4 p-2 rounded placeholder:text-gray-500 border border-[#333333] bg-[#cccccc] outline-[#333333] font-sans"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
           placeholder="Password"
           className="mb-4 p-2 rounded placeholder:text-gray-500 border border-[#333333] bg-[#cccccc] outline-[#333333] font-sans"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <Button
           variant="outlined"
           style={{ borderColor: '#cccccc', color: '#cccccc' }}
+          onClick={handleSignup}
         >
           Signup
         </Button>
@@ -50,4 +80,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;
