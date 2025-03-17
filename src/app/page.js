@@ -1,9 +1,32 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Button, Typography } from '@mui/material';
+import axios from 'axios';
 
 const Page = () => {
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const verifyToken = async () => {
+        try {
+          const response = await axios.post(
+            'http://localhost:8081/verifyToken',
+            {
+              token,
+            }
+          );
+          if (response.status === 200) {
+            window.location.href = '/home';
+          }
+        } catch (error) {
+          console.error('Token verification failed:', error);
+        }
+      };
+      verifyToken();
+    }
+  }, []);
+
   return (
     <div className="flex flex-col justify-center items-center h-screen text-white">
       <Typography variant="h2" gutterBottom>
