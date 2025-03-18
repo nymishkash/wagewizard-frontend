@@ -11,7 +11,7 @@ const Page = () => {
       const verifyToken = async () => {
         try {
           const response = await axios.post(
-            'http://localhost:8081/verifyToken',
+            'http://localhost:8081/auth/verifyToken',
             {
               token,
             }

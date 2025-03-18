@@ -12,7 +12,7 @@ const SignupPage = () => {
 
   const handleSignup = async () => {
     try {
-      const response = await axios.post('http://localhost:8081/signup', {
+      const response = await axios.post('http://localhost:8081/auth/signup', {
         name,
         email,
         password,

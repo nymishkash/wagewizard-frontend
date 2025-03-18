@@ -10,14 +10,23 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:8081/login', {
-        email,
-        password,
+      const response = await axios({
+        method: 'post',
+        url: 'http://localhost:8081/auth/login',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: {
+          email: email,
+          password: password,
+        },
       });
       console.log('Login successful:', response.data);
-      if (response.data.user && response.data.user.email) {
+      if (response) {
         console.log('gg');
-        localStorage.setItem('email', response.data.user.email);
+        localStorage.setItem('email', response.data.email);
+        localStorage.setItem('companyId', response.data.companyId);
+        localStorage.setItem('userId', response.data.userId);
       }
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
