@@ -103,7 +103,7 @@ const MainPage = () => {
           {
             chatUser: data.eventType === 'message_v1' ? 'user' : 'assistant',
             chatText: data.data.chatText || data.data.response,
-            createdAt: Date.now()
+            createdAt: Date.now(),
           },
         ]);
       };
@@ -179,14 +179,17 @@ const MainPage = () => {
   const handleBackToConversations = () => {
     setSelectedConversation(null);
     setMessages([]);
+    fetchConversations();
     // Remove the conversationId from localStorage when going back
     localStorage.removeItem('conversationId');
   };
 
   return (
     <div className="flex h-screen justify-center items-center bg-[#f5f5f5]">
-      <div className="w-[800px] h-[600px] bg-white flex flex-col shadow-xl rounded-lg overflow-hidden transition-all duration-300 hover:shadow-2xl">
-        <div className="p-3 flex items-center justify-between text-[#e0e0e0] bg-[#333333] border-b border-[#444444]">
+      <div className="w-[800px] h-[80vh] bg-white flex flex-col shadow-xl rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+        <div
+          className={`p-3 flex h-20 items-center ${selectedConversation ? 'justify-start' : 'justify-between'} text-[#e0e0e0] bg-[#333333] border-b border-[#444444]`}
+        >
           {selectedConversation && (
             <button
               onClick={handleBackToConversations}
@@ -195,20 +198,24 @@ const MainPage = () => {
               <ArrowLeft size={20} />
             </button>
           )}
-          <Typography variant="h6" className="flex-1 font-light">
-            {selectedConversation ? 'WageWizard Chat' : 'Your Conversations'}
-          </Typography>
+          <div className="ml-4">
+            <Typography variant="h6" className="font-light">
+              {selectedConversation ? 'WageWizard Chat' : 'Your Conversations'}
+            </Typography>
+          </div>
           {!selectedConversation && (
-            <Button
-              variant="text"
-              startIcon={<PlusCircle size={16} />}
-              onClick={createNewConversation}
-              style={{ color: '#cccccc' }}
-              size="small"
-              className="hover:bg-[#444444] transition-colors duration-200"
-            >
-              New Chat
-            </Button>
+            <div className="mr-3">
+              <Button
+                variant="text"
+                startIcon={<PlusCircle size={16} />}
+                onClick={createNewConversation}
+                style={{ color: '#cccccc' }}
+                size="small"
+                className="hover:bg-[#444444] transition-colors duration-200"
+              >
+                New Chat
+              </Button>
+            </div>
           )}
         </div>
 
@@ -267,25 +274,20 @@ const MainPage = () => {
                     <div key={conv.id}>
                       <div
                         onClick={() => setSelectedConversation(conv.id)}
-                        className="p-4 cursor-pointer hover:bg-[#f0f0f0] transition-all duration-200 border-l-2 border-transparent hover:border-l-[#333333]"
+                        className="p-4 cursor-pointer hover:bg-[#f0f0f0] transition-all duration-200"
                       >
                         <div className="flex justify-between items-center mb-2">
                           <Typography
                             variant="body2"
                             className="font-medium flex items-center text-[#333333]"
                           >
-                            <MessageCircle
-                              size={14}
-                              className="mr-2 text-[#333333]"
-                            />
-                            Conversation {conv.id.slice(0, 6)}...
+                            <span className="font-semibold">
+                              Conversation on{' '}
+                              {formatDate(
+                                conv?.lastMessage?.createdAt || conv?.createdAt
+                              )}
+                            </span>
                           </Typography>
-                          <div className="flex items-center text-xs text-[#666666]">
-                            <Clock size={12} className="mr-1" />
-                            {conv.lastMessage && conv.lastMessage.createdAt
-                              ? formatDate(conv.lastMessage.createdAt)
-                              : 'No messages yet'}
-                          </div>
                         </div>
                         <div className="text-sm text-[#666666] truncate">
                           <span className="flex items-center">
@@ -308,7 +310,10 @@ const MainPage = () => {
                               />
                             )}
                             {conv.lastMessage && conv.lastMessage.chatText
-                              ? conv.lastMessage.chatText
+                              ? conv.lastMessage.chatText.length > 75
+                                ? conv.lastMessage.chatText.substring(0, 75) +
+                                  '...'
+                                : conv.lastMessage.chatText
                               : 'No messages yet'}
                           </span>
                         </div>
@@ -356,8 +361,8 @@ const MainPage = () => {
                       <div
                         className={`p-3 rounded-lg shadow-sm ${
                           msg.chatUser === 'user'
-                            ? 'bg-[#e6f7ff] self-end rounded-br-none text-[#333333] max-w-sm'
-                            : 'bg-[#f0f0f0] self-start rounded-bl-none text-[#333333] max-w-md'
+                            ? 'bg-gray-200 self-end rounded-br-none text-[#333333] max-w-sm'
+                            : 'bg-gray-100 self-start rounded-bl-none text-[#333333] max-w-md'
                         }`}
                       >
                         {msg.chatText ? (
@@ -482,11 +487,11 @@ const MainPage = () => {
               )}
               <div ref={messagesEndRef} />
             </div>
-            <div className="p-3 bg-[#333333] flex items-center gap-2 border-t border-[#444444]">
+            <div className="p-3 flex h-20 items-center gap-2 border-t border-gray-300">
               <input
                 type="text"
                 placeholder="Type your message..."
-                className="flex-1 p-2 bg-[#252525] text-[#e0e0e0] placeholder-gray-500 rounded-md outline-none focus:ring-1 focus:ring-[#cccccc] border border-[#444444] transition-all duration-200"
+                className="flex-1 p-2 text-black placeholder-gray-500 outline-none transition-all duration-200"
                 value={currentMessage}
                 onChange={(e) => setCurrentMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
