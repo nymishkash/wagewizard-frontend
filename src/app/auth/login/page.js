@@ -1,13 +1,19 @@
 'use client';
 
 import { BASE_URL } from '@/utils/api_instance';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, Snackbar, Alert } from '@mui/material';
 import axios from 'axios';
 import { useState } from 'react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
 
   const handleLogin = async () => {
     try {
@@ -32,15 +38,31 @@ const LoginPage = () => {
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
+
+      window.location.href = '/chat';
     } catch (error) {
       console.error('Login failed:', error);
-    } finally {
-      window.location.href = '/chat';
+      setErrorMessage('Invalid credentials. Please try again.');
+      setOpenSnackbar(true);
     }
   };
 
   return (
     <div className="flex flex-col justify-center items-center h-screen ">
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
       <div className="text-[ffffff]">
         <Typography variant="h3" gutterBottom>
           Welcome back!

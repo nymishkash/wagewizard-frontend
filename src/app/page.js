@@ -1,28 +1,26 @@
 'use client';
 
-import { BASE_URL } from '@/utils/api_instance';
+import { BASE_URL, wwAPI } from '@/utils/api_instance';
 import { Box, Button, Typography } from '@mui/material';
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const Page = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const verifyToken = async () => {
-        try {
-          const response = await axios.post(`${BASE_URL}/auth/verifyToken`, {
-            token,
-          });
-          if (response.status === 200) {
-            window.location.href = '/home';
-          }
-        } catch (error) {
-          console.error('Token verification failed:', error);
-        }
-      };
-      verifyToken();
-    }
+    const verifyToken = async () => {
+      try {
+        await wwAPI.post('/auth/verifyToken', {
+          token: localStorage.getItem('token'),
+        });
+        window.location.href = '/chat';
+      } catch (error) {
+        console.error('Token verification failed:', error);
+      }
+    };
+
+    verifyToken();
   }, []);
 
   return (

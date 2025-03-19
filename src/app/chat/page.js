@@ -33,6 +33,21 @@ const MainPage = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    const verifyToken = async () => {
+      try {
+        await wwAPI.post('/auth/verifyToken', {
+          token: localStorage.getItem('token'),
+        });
+      } catch (error) {
+        console.error('Token verification failed:', error);
+        window.location.href = '/auth/login';
+      }
+    };
+
+    verifyToken();
+  }, []);
+
+  useEffect(() => {
     fetchConversations();
     // Check if there's a saved conversation ID in localStorage
     const savedConversationId = localStorage.getItem('conversationId');
