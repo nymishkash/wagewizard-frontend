@@ -1,8 +1,9 @@
 'use client';
 
+import { BASE_URL } from '@/utils/api_instance';
 import { Box, Button, Typography } from '@mui/material';
-import { useState } from 'react';
 import axios from 'axios';
+import { useState } from 'react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -12,7 +13,7 @@ const LoginPage = () => {
     try {
       const response = await axios({
         method: 'post',
-        url: 'http://localhost:8081/auth/login',
+        url: `${BASE_URL}/auth/login`,
         headers: {
           'Content-Type': 'application/json',
         },

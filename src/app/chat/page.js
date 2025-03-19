@@ -1,25 +1,25 @@
 'use client';
 
+import { BASE_URL, wwAPI } from '@/utils/api_instance';
 import {
-  Typography,
-  IconButton,
   Button,
-  Fade,
-  Divider,
   CircularProgress,
+  Divider,
+  Fade,
+  IconButton,
+  Typography,
 } from '@mui/material';
 import {
-  MessageCircle,
-  Send,
-  PlusCircle,
-  MessagesSquare,
   ArrowLeft,
-  Clock,
-  User,
   Bot,
+  Clock,
+  MessageCircle,
+  MessagesSquare,
+  PlusCircle,
+  Send,
+  User,
 } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 const MainPage = () => {
@@ -51,10 +51,7 @@ const MainPage = () => {
     setLoading(true);
     try {
       const companyId = localStorage.getItem('companyId');
-      const response = await axios.post(
-        'http://localhost:8081/conversations/all',
-        { companyId }
-      );
+      const response = await wwAPI.post('/conversations/all', { companyId });
       setConversations(response.data?.conversations || []);
     } catch (error) {
       console.error('Failed to fetch conversations:', error);
@@ -67,8 +64,8 @@ const MainPage = () => {
   const fetchConversationMessages = async (conversationId) => {
     setLoadingMessages(true);
     try {
-      const response = await axios.get(
-        `http://localhost:8081/conversations/${conversationId}/messages`
+      const response = await wwAPI.get(
+        `/conversations/${conversationId}/messages`
       );
       if (response.data && response.data.messages) {
         setMessages(response.data.messages);
@@ -94,7 +91,7 @@ const MainPage = () => {
       fetchConversationMessages(selectedConversation);
 
       eventSourceRef.current = new EventSource(
-        `http://localhost:8081/conversations/${selectedConversation}`
+        `${BASE_URL}/conversations/${selectedConversation}`
       );
       eventSourceRef.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
@@ -106,6 +103,7 @@ const MainPage = () => {
           {
             chatUser: data.eventType === 'message_v1' ? 'user' : 'assistant',
             chatText: data.data.chatText || data.data.response,
+            createdAt: Date.now()
           },
         ]);
       };
@@ -130,7 +128,7 @@ const MainPage = () => {
     try {
       const userId = localStorage.getItem('userId');
       const companyId = localStorage.getItem('companyId');
-      await axios.post('http://localhost:8081/conversations/send', {
+      await wwAPI.post('/conversations/send', {
         payload: {
           userMessage: message,
           userId,
@@ -165,13 +163,10 @@ const MainPage = () => {
     try {
       const userId = localStorage.getItem('userId');
       const companyId = localStorage.getItem('companyId');
-      const response = await axios.post(
-        'http://localhost:8081/conversations/create',
-        {
-          userId,
-          companyId,
-        }
-      );
+      const response = await wwAPI.post('/conversations/create', {
+        userId,
+        companyId,
+      });
       if (response.data && response.data.conversationId) {
         setSelectedConversation(response.data.conversationId);
         fetchConversations();
@@ -189,17 +184,16 @@ const MainPage = () => {
   };
 
   return (
-    <div className="flex h-screen justify-center items-center bg-[#1a1a1a]">
-      <div className="w-[800px] h-[600px] bg-[#2d2d2d] flex flex-col shadow-xl rounded-lg overflow-hidden transition-all duration-300 hover:shadow-2xl">
+    <div className="flex h-screen justify-center items-center bg-[#f5f5f5]">
+      <div className="w-[800px] h-[600px] bg-white flex flex-col shadow-xl rounded-lg overflow-hidden transition-all duration-300 hover:shadow-2xl">
         <div className="p-3 flex items-center justify-between text-[#e0e0e0] bg-[#333333] border-b border-[#444444]">
           {selectedConversation && (
-            <IconButton
+            <button
               onClick={handleBackToConversations}
-              className="text-[#e0e0e0] hover:text-white mr-2"
-              style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
+              className="text-[#e0e0e0] size-8 hover:bg-gray-800 mr-3 cursor-pointer rounded-md flex items-center justify-center"
             >
               <ArrowLeft size={20} />
-            </IconButton>
+            </button>
           )}
           <Typography variant="h6" className="flex-1 font-light">
             {selectedConversation ? 'WageWizard Chat' : 'Your Conversations'}
@@ -219,25 +213,25 @@ const MainPage = () => {
         </div>
 
         {!selectedConversation ? (
-          <div className="flex-1 overflow-y-auto text-[#e0e0e0] bg-[#252525] scrollbar-thin scrollbar-thumb-[#444444] scrollbar-track-[#252525]">
+          <div className="flex-1 overflow-y-auto text-[#333333] bg-white scrollbar-thin scrollbar-thumb-[#cccccc] scrollbar-track-white">
             {loading ? (
-              <div className="h-full flex flex-col items-center justify-center text-[#e0e0e0]">
-                <CircularProgress size={40} style={{ color: '#cccccc' }} />
+              <div className="h-full flex flex-col items-center justify-center">
+                <CircularProgress size={40} style={{ color: '#333333' }} />
                 <Typography
                   variant="body1"
-                  className="mt-4 text-[#cccccc] font-light"
+                  className="mt-4 text-[#333333] font-light"
                 >
                   Loading conversations...
                 </Typography>
               </div>
             ) : conversations.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-[#e0e0e0]">
-                <div className="p-8 rounded-full bg-[#333333] mb-4 shadow-inner">
-                  <MessagesSquare size={48} className="text-[#cccccc]" />
+              <div className="h-full flex flex-col items-center justify-center">
+                <div className="p-8 rounded-full bg-[#f0f0f0] mb-4 shadow-inner">
+                  <MessagesSquare size={48} className="text-[#333333]" />
                 </div>
                 <Typography
                   variant="body1"
-                  className="mt-2 text-[#cccccc] font-light"
+                  className="mt-2 text-[#333333] font-light"
                 >
                   No conversations yet
                 </Typography>
@@ -246,92 +240,110 @@ const MainPage = () => {
                   startIcon={<PlusCircle size={16} />}
                   onClick={createNewConversation}
                   style={{
-                    borderColor: '#cccccc',
-                    color: '#cccccc',
+                    borderColor: '#333333',
+                    color: '#333333',
                     marginTop: '16px',
                   }}
-                  className="hover:bg-[#333333] transition-all duration-300"
+                  className="hover:bg-[#f0f0f0] transition-all duration-300"
                 >
                   Start a new conversation
                 </Button>
               </div>
             ) : (
               <div className="w-full">
-                {conversations.map((conv, index) => (
-                  <div key={conv.id}>
-                    <div
-                      onClick={() => setSelectedConversation(conv.id)}
-                      className="p-4 cursor-pointer hover:bg-[#333333] transition-all duration-200 border-l-2 border-transparent hover:border-l-[#cccccc]"
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <Typography
-                          variant="body2"
-                          className="font-medium flex items-center text-[#cccccc]"
-                        >
-                          <MessageCircle
-                            size={14}
-                            className="mr-2 text-[#cccccc]"
-                          />
-                          Conversation {conv.id.slice(0, 6)}...
-                        </Typography>
-                        <div className="flex items-center text-xs text-[#aaaaaa]">
-                          <Clock size={12} className="mr-1" />
-                          {conv.lastMessage && conv.lastMessage.createdAt
-                            ? formatDate(conv.lastMessage.createdAt)
-                            : 'No messages yet'}
+                {[...conversations]
+                  .sort((a, b) => {
+                    // If a has no lastMessage, it should come first
+                    if (!a.lastMessage || !a.lastMessage.createdAt) return -1;
+                    // If b has no lastMessage, a should come after
+                    if (!b.lastMessage || !b.lastMessage.createdAt) return 1;
+                    // Otherwise sort by date, newest first
+                    return (
+                      new Date(b.lastMessage.createdAt) -
+                      new Date(a.lastMessage.createdAt)
+                    );
+                  })
+                  .map((conv, index) => (
+                    <div key={conv.id}>
+                      <div
+                        onClick={() => setSelectedConversation(conv.id)}
+                        className="p-4 cursor-pointer hover:bg-[#f0f0f0] transition-all duration-200 border-l-2 border-transparent hover:border-l-[#333333]"
+                      >
+                        <div className="flex justify-between items-center mb-2">
+                          <Typography
+                            variant="body2"
+                            className="font-medium flex items-center text-[#333333]"
+                          >
+                            <MessageCircle
+                              size={14}
+                              className="mr-2 text-[#333333]"
+                            />
+                            Conversation {conv.id.slice(0, 6)}...
+                          </Typography>
+                          <div className="flex items-center text-xs text-[#666666]">
+                            <Clock size={12} className="mr-1" />
+                            {conv.lastMessage && conv.lastMessage.createdAt
+                              ? formatDate(conv.lastMessage.createdAt)
+                              : 'No messages yet'}
+                          </div>
+                        </div>
+                        <div className="text-sm text-[#666666] truncate">
+                          <span className="flex items-center">
+                            {conv.lastMessage && conv.lastMessage.chatUser ? (
+                              conv.lastMessage.chatUser === 'assistant' ? (
+                                <Bot
+                                  size={12}
+                                  className="mr-1 text-[#333333]"
+                                />
+                              ) : (
+                                <User
+                                  size={12}
+                                  className="mr-1 text-[#333333]"
+                                />
+                              )
+                            ) : (
+                              <MessageCircle
+                                size={12}
+                                className="mr-1 text-[#333333]"
+                              />
+                            )}
+                            {conv.lastMessage && conv.lastMessage.chatText
+                              ? conv.lastMessage.chatText
+                              : 'No messages yet'}
+                          </span>
                         </div>
                       </div>
-                      <div className="text-sm text-[#aaaaaa] truncate">
-                        <span className="flex items-center">
-                          {conv.lastMessage && conv.lastMessage.chatUser ? (
-                            conv.lastMessage.chatUser === 'assistant' ? (
-                              <Bot size={12} className="mr-1 text-[#cccccc]" />
-                            ) : (
-                              <User size={12} className="mr-1 text-[#cccccc]" />
-                            )
-                          ) : (
-                            <MessageCircle
-                              size={12}
-                              className="mr-1 text-[#cccccc]"
-                            />
-                          )}
-                          {conv.lastMessage && conv.lastMessage.chatText
-                            ? conv.lastMessage.chatText
-                            : 'No messages yet'}
-                        </span>
-                      </div>
+                      {index < conversations.length - 1 && (
+                        <Divider
+                          style={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
+                        />
+                      )}
                     </div>
-                    {index < conversations.length - 1 && (
-                      <Divider
-                        style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
-                      />
-                    )}
-                  </div>
-                ))}
+                  ))}
               </div>
             )}
           </div>
         ) : (
           <>
-            <div className="flex-1 p-4 overflow-y-auto text-[#e0e0e0] flex flex-col gap-4 bg-[#252525] scrollbar-thin scrollbar-thumb-[#444444] scrollbar-track-[#252525]">
+            <div className="flex-1 p-4 overflow-y-auto text-[#333333] flex flex-col gap-4 bg-white scrollbar-thin scrollbar-thumb-[#cccccc] scrollbar-track-white">
               {loadingMessages ? (
-                <div className="h-full flex flex-col items-center justify-center text-[#e0e0e0]">
-                  <CircularProgress size={40} style={{ color: '#cccccc' }} />
+                <div className="h-full flex flex-col items-center justify-center">
+                  <CircularProgress size={40} style={{ color: '#333333' }} />
                   <Typography
                     variant="body1"
-                    className="mt-4 text-[#cccccc] font-light"
+                    className="mt-4 text-[#333333] font-light"
                   >
                     Loading messages...
                   </Typography>
                 </div>
               ) : messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-[#aaaaaa]">
-                  <div className="p-8 rounded-full bg-[#333333] mb-4 shadow-inner">
-                    <Bot size={48} className="text-[#cccccc]" />
+                <div className="h-full flex flex-col items-center justify-center text-[#666666]">
+                  <div className="p-8 rounded-full bg-[#f0f0f0] mb-4 shadow-inner">
+                    <Bot size={48} className="text-[#333333]" />
                   </div>
                   <Typography
                     variant="body1"
-                    className="text-center max-w-xs font-light text-[#cccccc]"
+                    className="text-center max-w-xs font-light text-[#333333]"
                   >
                     Hi there! I'm WageWizard, your payroll assistant. How can I
                     help you today?
@@ -344,12 +356,12 @@ const MainPage = () => {
                       <div
                         className={`p-3 rounded-lg shadow-sm ${
                           msg.chatUser === 'user'
-                            ? 'bg-[#333333] self-end rounded-br-none text-[#cccccc] max-w-sm'
-                            : 'bg-[#3a3a3a] self-start rounded-bl-none text-[#e0e0e0] max-w-md'
+                            ? 'bg-[#e6f7ff] self-end rounded-br-none text-[#333333] max-w-sm'
+                            : 'bg-[#f0f0f0] self-start rounded-bl-none text-[#333333] max-w-md'
                         }`}
                       >
                         {msg.chatText ? (
-                          <div className="markdown-content prose prose-invert prose-sm max-w-none">
+                          <div className="markdown-content prose prose-sm max-w-none">
                             <ReactMarkdown
                               components={{
                                 p: ({ node, ...props }) => (
@@ -396,20 +408,20 @@ const MainPage = () => {
                                 ),
                                 a: ({ node, ...props }) => (
                                   <a
-                                    className="text-blue-400 hover:underline"
+                                    className="text-blue-600 hover:underline"
                                     {...props}
                                   />
                                 ),
                                 blockquote: ({ node, ...props }) => (
                                   <blockquote
-                                    className="border-l-2 border-[#555555] pl-3 italic my-2"
+                                    className="border-l-2 border-[#cccccc] pl-3 italic my-2"
                                     {...props}
                                   />
                                 ),
                                 code: ({ node, inline, ...props }) =>
                                   inline ? (
                                     <code
-                                      className="bg-[#2a2a2a] px-1 py-0.5 rounded text-[#e0e0e0]"
+                                      className="bg-[#f0f0f0] px-1 py-0.5 rounded text-[#333333]"
                                       {...props}
                                     />
                                   ) : (
@@ -454,17 +466,14 @@ const MainPage = () => {
                         )}
                       </div>
                       <div
-                        className={`text-xs text-[#aaaaaa] mt-1 ${
-                          msg.chatUser === 'user'
-                            ? 'self-end mr-2'
-                            : 'self-start ml-2'
+                        className={`text-[10px] text-[#aaaaaa] mt-1 ${
+                          msg.chatUser === 'user' ? 'self-end' : 'self-start'
                         }`}
                       >
                         {msg.chatUser === 'user' ? 'You' : 'Assistant'}
+                        <span className="font-extrabold">{' · '}</span>
                         {msg.createdAt && (
-                          <span className="ml-2">
-                            {formatDate(msg.createdAt)}
-                          </span>
+                          <span className="">{formatDate(msg.createdAt)}</span>
                         )}
                       </div>
                     </div>

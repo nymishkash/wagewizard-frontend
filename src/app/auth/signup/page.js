@@ -1,8 +1,9 @@
 'use client';
 
+import { BASE_URL } from '@/utils/api_instance';
 import { Box, Button, Typography } from '@mui/material';
-import { useState } from 'react';
 import axios from 'axios';
+import { useState } from 'react';
 
 const SignupPage = () => {
   const [name, setName] = useState('');
@@ -12,7 +13,7 @@ const SignupPage = () => {
 
   const handleSignup = async () => {
     try {
-      const response = await axios.post('http://localhost:8081/auth/signup', {
+      const response = await axios.post(`${BASE_URL}/auth/signup`, {
         name,
         email,
         password,

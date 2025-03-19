@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import { BASE_URL } from '@/utils/api_instance';
 import { Box, Button, Typography } from '@mui/material';
 import axios from 'axios';
+import { useEffect } from 'react';
 
 const Page = () => {
   useEffect(() => {
@@ -10,12 +11,9 @@ const Page = () => {
     if (token) {
       const verifyToken = async () => {
         try {
-          const response = await axios.post(
-            'http://localhost:8081/auth/verifyToken',
-            {
-              token,
-            }
-          );
+          const response = await axios.post(`${BASE_URL}/auth/verifyToken`, {
+            token,
+          });
           if (response.status === 200) {
             window.location.href = '/home';
           }
