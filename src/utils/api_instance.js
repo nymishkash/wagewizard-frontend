@@ -22,4 +22,3 @@ wwAPI.interceptors.request.use(
 );
 
 export { BASE_URL, wwAPI };
-

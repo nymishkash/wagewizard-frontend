@@ -91,7 +91,7 @@ const MainPage = () => {
       fetchConversationMessages(selectedConversation);
 
       eventSourceRef.current = new EventSource(
-        `${BASE_URL}/conversations/${selectedConversation}`
+        `${BASE_URL}/sse/${selectedConversation}`
       );
       eventSourceRef.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
