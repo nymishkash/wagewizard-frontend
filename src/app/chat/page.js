@@ -1,6 +1,13 @@
 'use client';
 
-import { Typography, IconButton, Button, Fade, Divider, CircularProgress } from '@mui/material';
+import {
+  Typography,
+  IconButton,
+  Button,
+  Fade,
+  Divider,
+  CircularProgress,
+} from '@mui/material';
 import {
   MessageCircle,
   Send,
@@ -13,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
 
 const MainPage = () => {
   const [currentMessage, setCurrentMessage] = useState('');
@@ -81,10 +89,10 @@ const MainPage = () => {
     if (selectedConversation) {
       // Save the selected conversation ID to localStorage
       localStorage.setItem('conversationId', selectedConversation);
-      
+
       // Fetch previous messages when a conversation is selected
       fetchConversationMessages(selectedConversation);
-      
+
       eventSourceRef.current = new EventSource(
         `http://localhost:8081/conversations/${selectedConversation}`
       );
@@ -215,7 +223,10 @@ const MainPage = () => {
             {loading ? (
               <div className="h-full flex flex-col items-center justify-center text-[#e0e0e0]">
                 <CircularProgress size={40} style={{ color: '#cccccc' }} />
-                <Typography variant="body1" className="mt-4 text-[#cccccc] font-light">
+                <Typography
+                  variant="body1"
+                  className="mt-4 text-[#cccccc] font-light"
+                >
                   Loading conversations...
                 </Typography>
               </div>
@@ -224,7 +235,10 @@ const MainPage = () => {
                 <div className="p-8 rounded-full bg-[#333333] mb-4 shadow-inner">
                   <MessagesSquare size={48} className="text-[#cccccc]" />
                 </div>
-                <Typography variant="body1" className="mt-2 text-[#cccccc] font-light">
+                <Typography
+                  variant="body1"
+                  className="mt-2 text-[#cccccc] font-light"
+                >
                   No conversations yet
                 </Typography>
                 <Button
@@ -262,9 +276,9 @@ const MainPage = () => {
                         </Typography>
                         <div className="flex items-center text-xs text-[#aaaaaa]">
                           <Clock size={12} className="mr-1" />
-                          {conv.lastMessage && conv.lastMessage.createdAt 
+                          {conv.lastMessage && conv.lastMessage.createdAt
                             ? formatDate(conv.lastMessage.createdAt)
-                            : "No messages yet"}
+                            : 'No messages yet'}
                         </div>
                       </div>
                       <div className="text-sm text-[#aaaaaa] truncate">
@@ -276,11 +290,14 @@ const MainPage = () => {
                               <User size={12} className="mr-1 text-[#cccccc]" />
                             )
                           ) : (
-                            <MessageCircle size={12} className="mr-1 text-[#cccccc]" />
+                            <MessageCircle
+                              size={12}
+                              className="mr-1 text-[#cccccc]"
+                            />
                           )}
-                          {conv.lastMessage && conv.lastMessage.chatText 
-                            ? conv.lastMessage.chatText 
-                            : "No messages yet"}
+                          {conv.lastMessage && conv.lastMessage.chatText
+                            ? conv.lastMessage.chatText
+                            : 'No messages yet'}
                         </span>
                       </div>
                     </div>
@@ -300,7 +317,10 @@ const MainPage = () => {
               {loadingMessages ? (
                 <div className="h-full flex flex-col items-center justify-center text-[#e0e0e0]">
                   <CircularProgress size={40} style={{ color: '#cccccc' }} />
-                  <Typography variant="body1" className="mt-4 text-[#cccccc] font-light">
+                  <Typography
+                    variant="body1"
+                    className="mt-4 text-[#cccccc] font-light"
+                  >
                     Loading messages...
                   </Typography>
                 </div>
@@ -309,7 +329,10 @@ const MainPage = () => {
                   <div className="p-8 rounded-full bg-[#333333] mb-4 shadow-inner">
                     <Bot size={48} className="text-[#cccccc]" />
                   </div>
-                  <Typography variant="body1" className="text-center max-w-xs font-light text-[#cccccc]">
+                  <Typography
+                    variant="body1"
+                    className="text-center max-w-xs font-light text-[#cccccc]"
+                  >
                     Hi there! I'm WageWizard, your payroll assistant. How can I
                     help you today?
                   </Typography>
@@ -319,20 +342,129 @@ const MainPage = () => {
                   <Fade in key={msg.id || index} timeout={400}>
                     <div className="flex flex-col">
                       <div
-                        className={`p-3 max-w-sm rounded-lg shadow-sm ${
+                        className={`p-3 rounded-lg shadow-sm ${
                           msg.chatUser === 'user'
-                            ? 'bg-[#333333] self-end rounded-br-none text-[#cccccc]'
-                            : 'bg-[#3a3a3a] self-start rounded-bl-none text-[#e0e0e0]'
+                            ? 'bg-[#333333] self-end rounded-br-none text-[#cccccc] max-w-sm'
+                            : 'bg-[#3a3a3a] self-start rounded-bl-none text-[#e0e0e0] max-w-md'
                         }`}
                       >
-                        {msg.chatText}
+                        {msg.chatText ? (
+                          <div className="markdown-content prose prose-invert prose-sm max-w-none">
+                            <ReactMarkdown
+                              components={{
+                                p: ({ node, ...props }) => (
+                                  <p className="mb-2 last:mb-0" {...props} />
+                                ),
+                                ul: ({ node, ...props }) => (
+                                  <ul
+                                    className="list-disc pl-5 mb-2"
+                                    {...props}
+                                  />
+                                ),
+                                ol: ({ node, ...props }) => (
+                                  <ol
+                                    className="list-decimal pl-5 mb-2"
+                                    {...props}
+                                  />
+                                ),
+                                li: ({ node, ...props }) => (
+                                  <li className="mb-1" {...props} />
+                                ),
+                                h1: ({ node, ...props }) => (
+                                  <h1
+                                    className="text-xl font-bold mb-2 mt-3"
+                                    {...props}
+                                  />
+                                ),
+                                h2: ({ node, ...props }) => (
+                                  <h2
+                                    className="text-lg font-bold mb-2 mt-3"
+                                    {...props}
+                                  />
+                                ),
+                                h3: ({ node, ...props }) => (
+                                  <h3
+                                    className="text-md font-bold mb-2 mt-3"
+                                    {...props}
+                                  />
+                                ),
+                                strong: ({ node, ...props }) => (
+                                  <strong className="font-bold" {...props} />
+                                ),
+                                em: ({ node, ...props }) => (
+                                  <em className="italic" {...props} />
+                                ),
+                                a: ({ node, ...props }) => (
+                                  <a
+                                    className="text-blue-400 hover:underline"
+                                    {...props}
+                                  />
+                                ),
+                                blockquote: ({ node, ...props }) => (
+                                  <blockquote
+                                    className="border-l-2 border-[#555555] pl-3 italic my-2"
+                                    {...props}
+                                  />
+                                ),
+                                code: ({ node, inline, ...props }) =>
+                                  inline ? (
+                                    <code
+                                      className="bg-[#2a2a2a] px-1 py-0.5 rounded text-[#e0e0e0]"
+                                      {...props}
+                                    />
+                                  ) : (
+                                    <code
+                                      className="block bg-[#2a2a2a] p-2 rounded text-[#e0e0e0] overflow-x-auto my-2"
+                                      {...props}
+                                    />
+                                  ),
+                                hr: ({ node, ...props }) => (
+                                  <hr
+                                    className="border-[#444444] my-3"
+                                    {...props}
+                                  />
+                                ),
+                                table: ({ node, ...props }) => (
+                                  <div className="overflow-x-auto my-2">
+                                    <table
+                                      className="min-w-full border-collapse border border-[#444444]"
+                                      {...props}
+                                    />
+                                  </div>
+                                ),
+                                th: ({ node, ...props }) => (
+                                  <th
+                                    className="border border-[#444444] px-3 py-2 bg-[#2a2a2a]"
+                                    {...props}
+                                  />
+                                ),
+                                td: ({ node, ...props }) => (
+                                  <td
+                                    className="border border-[#444444] px-3 py-2"
+                                    {...props}
+                                  />
+                                ),
+                              }}
+                            >
+                              {msg.chatText}
+                            </ReactMarkdown>
+                          </div>
+                        ) : (
+                          <div>{msg.chatText}</div>
+                        )}
                       </div>
-                      <div className={`text-xs text-[#aaaaaa] mt-1 ${
-                        msg.chatUser === 'user' ? 'self-end mr-2' : 'self-start ml-2'
-                      }`}>
+                      <div
+                        className={`text-xs text-[#aaaaaa] mt-1 ${
+                          msg.chatUser === 'user'
+                            ? 'self-end mr-2'
+                            : 'self-start ml-2'
+                        }`}
+                      >
                         {msg.chatUser === 'user' ? 'You' : 'Assistant'}
                         {msg.createdAt && (
-                          <span className="ml-2">{formatDate(msg.createdAt)}</span>
+                          <span className="ml-2">
+                            {formatDate(msg.createdAt)}
+                          </span>
                         )}
                       </div>
                     </div>
