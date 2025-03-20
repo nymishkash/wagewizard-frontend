@@ -228,8 +228,8 @@ const MainPage = () => {
   };
 
   return (
-    <div className="flex h-screen justify-center items-center bg-gradient-to-b from-gray-50 to-gray-200">
-      <div className="w-[650px] h-[85vh] bg-white flex flex-col shadow-2xl rounded-3xl overflow-hidden transition-all duration-300 border border-gray-200">
+    <div className="flex h-screen justify-center items-center bg-slate-200">
+      <div className="w-[650px] h-[85vh] bg-white flex flex-col shadow-2xl rounded-3xl overflow-hidden transition-all duration-300 border border-black">
         <div
           className={`p-4 flex h-20 items-center ${selectedConversation ? 'justify-start' : 'justify-between'} text-white bg-gradient-to-r from-gray-800 to-black border-b border-gray-600`}
         >
