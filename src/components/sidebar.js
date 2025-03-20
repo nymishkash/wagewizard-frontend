@@ -3,13 +3,20 @@
 import { usePathname } from 'next/navigation';
 import { MessageSquare, Users, LogOut } from 'lucide-react';
 import { Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
 
-  // Check if sidebar should be hidden
-  if (pathname === '' || pathname === '/' || pathname.startsWith('/auth/')) {
-    return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Only run this check after component has mounted on client
+  // This prevents hydration mismatch between server and client
+  if (!mounted || pathname === '' || pathname === '/' || pathname.startsWith('/auth/')) {
+    return;
   }
 
   const isActive = (path) => {

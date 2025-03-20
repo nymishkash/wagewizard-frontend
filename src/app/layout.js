@@ -24,10 +24,8 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="flex h-screen">
-          <div className="fixed h-screen">
-            <Sidebar />
-          </div>
-          <div className="flex-1 ml-64 overflow-auto">
+          <Sidebar />
+          <div className="flex-1 overflow-auto" style={{ marginLeft: 'var(--sidebar-width, 0)' }}>
             <main className="w-full">{children}</main>
           </div>
         </div>
