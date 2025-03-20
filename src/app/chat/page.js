@@ -13,6 +13,7 @@ import {
   ArrowLeft,
   Bot,
   Clock,
+  LoaderCircleIcon,
   MessageCircle,
   MessagesSquare,
   MessagesSquareIcon,
@@ -31,6 +32,7 @@ const MainPage = () => {
   const [loading, setLoading] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [isAuthVerified, setIsAuthVerified] = useState(false);
   const eventSourceRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -40,6 +42,7 @@ const MainPage = () => {
         await wwAPI.post('/auth/verifyToken', {
           token: localStorage.getItem('token'),
         });
+        setIsAuthVerified(true);
       } catch (error) {
         console.error('Token verification failed:', error);
         window.location.href = '/auth/login';
@@ -227,7 +230,11 @@ const MainPage = () => {
     localStorage.removeItem('conversationId');
   };
 
-  return (
+  return !isAuthVerified ? (
+    <div className="h-screen w-screen flex items-center bg-slate-200 justify-center">
+      <LoaderCircleIcon size={40} className="animate-spin text-black" />
+    </div>
+  ) : (
     <div className="flex h-screen justify-center items-center bg-slate-200">
       <div className="w-[650px] h-[85vh] bg-white flex flex-col shadow-2xl rounded-3xl overflow-hidden transition-all duration-300 border border-black">
         <div

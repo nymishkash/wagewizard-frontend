@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://ww-api.nymish.xyz'; //prod
-// const BASE_URL = 'http://localhost:8081'; //dev
+// const BASE_URL = 'https://ww-api.nymish.xyz'; //prod
+const BASE_URL = 'http://localhost:8081'; //dev
 
 const wwAPI = axios.create({
   baseURL: BASE_URL,
