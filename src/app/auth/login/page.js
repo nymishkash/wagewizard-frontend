@@ -1,15 +1,32 @@
 'use client';
 
-import { BASE_URL } from '@/utils/api_instance';
+import { BASE_URL, wwAPI } from '@/utils/api_instance';
 import { Box, Button, Typography, Snackbar, Alert } from '@mui/material';
 import axios from 'axios';
-import { useState } from 'react';
+import { LoaderCircleIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      try {
+        await wwAPI.post('/auth/verifyToken', {
+          token: localStorage.getItem('token'),
+        });
+        window.location.href = '/chat';
+      } catch (error) {
+        console.error('Token verification failed:', error);
+      }
+    };
+
+    verifyToken();
+  }, []);
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
@@ -17,6 +34,7 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     try {
+      setLoading(true);
       const response = await axios({
         method: 'post',
         url: `${BASE_URL}/auth/login`,
@@ -38,12 +56,14 @@ const LoginPage = () => {
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
+      setLoading(false);
 
       window.location.href = '/chat';
     } catch (error) {
       console.error('Login failed:', error);
       setErrorMessage('Invalid credentials. Please try again.');
       setOpenSnackbar(true);
+      setLoading(false);
     }
   };
 
@@ -87,8 +107,9 @@ const LoginPage = () => {
           variant="outlined"
           style={{ borderColor: '#cccccc', color: '#cccccc' }}
           onClick={handleLogin}
+          disabled={loading}
         >
-          Login
+          {loading ? <LoaderCircleIcon className="animate-spin" /> : 'Login'}
         </Button>
         <button
           className="font-light text-[#cccccc] underline text-xs mt-3 hover:text-gray-300 transition all duration-200 hover:cursor-pointer outline-0"
