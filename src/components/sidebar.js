@@ -8,7 +8,7 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   // Check if sidebar should be hidden
-  if (pathname === '/' || pathname.startsWith('/auth/')) {
+  if (pathname === '' || pathname === '/' || pathname.startsWith('/auth/')) {
     return null;
   }
 
