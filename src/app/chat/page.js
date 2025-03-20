@@ -29,6 +29,7 @@ const MainPage = () => {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const eventSourceRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -60,7 +61,7 @@ const MainPage = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
+  }, [messages, isTyping]);
 
   const fetchConversations = async () => {
     setLoading(true);
@@ -113,14 +114,27 @@ const MainPage = () => {
         if (!data.eventType) {
           return;
         }
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            chatUser: data.eventType === 'message_v1' ? 'user' : 'assistant',
-            chatText: data.data.chatText || data.data.response,
-            createdAt: Date.now(),
-          },
-        ]);
+        
+        if (data.eventType === 'response_v1') {
+          setIsTyping(false);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              chatUser: 'assistant',
+              chatText: data.data.response,
+              createdAt: Date.now(),
+            },
+          ]);
+        } else if (data.eventType === 'message_v1') {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              chatUser: 'user',
+              chatText: data.data.chatText,
+              createdAt: Date.now(),
+            },
+          ]);
+        }
       };
 
       eventSourceRef.current.onerror = (error) => {
@@ -139,7 +153,16 @@ const MainPage = () => {
   const handleSendMessage = async () => {
     if (!currentMessage.trim()) return;
     const message = currentMessage;
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        chatUser: 'user',
+        chatText: message,
+        createdAt: Date.now(),
+      },
+    ]);
     setCurrentMessage('');
+    setIsTyping(true);
     try {
       const userId = localStorage.getItem('userId');
       const companyId = localStorage.getItem('companyId');
@@ -154,6 +177,7 @@ const MainPage = () => {
     } catch (error) {
       console.error('Failed to send message:', error);
       setCurrentMessage(message);
+      setIsTyping(false);
     }
   };
 
@@ -499,6 +523,25 @@ const MainPage = () => {
                     </div>
                   </Fade>
                 ))
+              )}
+              {isTyping && (
+                <Fade in={isTyping}>
+                  <div className="flex flex-col mb-4">
+                    <div className="bg-[#f0f0f0] rounded-lg p-3 max-w-[80%] self-start">
+                      <div className="flex items-center">
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-[#333333] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                          <div className="w-2 h-2 bg-[#333333] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                          <div className="w-2 h-2 bg-[#333333] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-[10px] text-[#aaaaaa] mt-1 self-start">
+                      Assistant<span className="font-extrabold">{' · '}</span>
+                      <span className="">Typing...</span>
+                    </div>
+                  </div>
+                </Fade>
               )}
               <div ref={messagesEndRef} />
             </div>
