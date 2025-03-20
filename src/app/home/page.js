@@ -5,7 +5,7 @@ import { Button, Box } from '@mui/material';
 const HomePage = () => {
   return (
     <div className="h-screen flex w-full items-center justify-center">
-      <Box className="flex flex-col border border-gray-600 rounded-lg p-5 shadow-lg bg-[#1e1e1e] mt-5 w-72">
+      <Box className="flex flex-col border border-gray-600 rounded-lg p-5 shadow-lg bg-black mt-5 w-72">
         <Button
           variant="contained"
           style={{

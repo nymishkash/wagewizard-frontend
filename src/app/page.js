@@ -24,11 +24,11 @@ const Page = () => {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen text-white">
+    <div className="flex flex-col justify-center items-center h-screen bg-gradient-to-r from-gray-800 to-black text-white">
       <Typography variant="h2" gutterBottom>
         WageWizard
       </Typography>
-      <Box className="flex flex-col border border-gray-600 rounded-lg p-5 shadow-lg bg-[#1e1e1e] mt-5 w-72">
+      <Box className="flex flex-col border border-gray-600 rounded-lg p-5 shadow-lg bg-black mt-5 w-72">
         <Button
           variant="contained"
           style={{
