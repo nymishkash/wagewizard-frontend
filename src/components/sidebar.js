@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { MessageSquare, Users, LogOut } from 'lucide-react';
+import { MessageSquare, Users, LogOut, Mic } from 'lucide-react';
 import { Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
@@ -15,7 +15,12 @@ const Sidebar = () => {
 
   // Only run this check after component has mounted on client
   // This prevents hydration mismatch between server and client
-  if (!mounted || pathname === '' || pathname === '/' || pathname.startsWith('/auth/')) {
+  if (
+    !mounted ||
+    pathname === '' ||
+    pathname === '/' ||
+    pathname.startsWith('/auth/')
+  ) {
     return;
   }
 
@@ -50,6 +55,18 @@ const Sidebar = () => {
           >
             <MessageSquare size={20} className="mr-3" />
             <span>Chat</span>
+          </a>
+
+          <a
+            href="/voice"
+            className={`flex items-center p-3 rounded-lg transition-all duration-200 ${
+              isActive('/voice')
+                ? 'bg-white/20 text-white'
+                : 'text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            <Mic size={20} className="mr-3" />
+            <span>Voice</span>
           </a>
 
           <a
