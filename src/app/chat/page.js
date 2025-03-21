@@ -37,6 +37,12 @@ const MainPage = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    if (localStorage.conversationId) {
+      localStorage.removeItem('conversationId');
+    }
+  }, []);
+
+  useEffect(() => {
     const verifyToken = async () => {
       try {
         await wwAPI.post('/auth/verifyToken', {
